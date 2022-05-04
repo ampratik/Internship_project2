@@ -14,22 +14,24 @@ const internSchema = new mongoose.Schema({
         lowercase : true,
         unique : true,
         trim:true,
-        validate:{
-                validator:function(email){
-                    return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
-            },msg:'please fill a valid email address',isAsync:false
-            }
+        // validate:{
+        //         validator:function(email){
+        //         return /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(email)
+        //     },msg:'please fill a valid email address',isAsync:false
+        //     }
             },
+
+
     mobile :{
             type : Number,
             required : true,
             unique : true,
             trim:true,
-            validate:{
-                     validator:function(mobile){
-                    return /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(mobile)
-                    },msg:'please fill a valid mobile number',isAsync:false
-                    }
+            // validate:{
+            //          validator:function(mobile){
+            //         return /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(mobile)
+            //         },msg:'please fill a valid mobile number',isAsync:false
+            //         }
             },
     collegeId :{
         type : ObjectId,
@@ -38,7 +40,7 @@ const internSchema = new mongoose.Schema({
         trim : true
     },
     isDeleted: {
-        type : boolean,
+        type : Boolean,
         default: false
         }
     },{ timestamps: true }
