@@ -3,6 +3,8 @@ const collegeModel = require("../models/collegeModel")
 const mongoose = require('mongoose');
 
 
+//--CREATING COLLEGE
+
 const createCollege = async function (req, res) {
     try {
       let Body = req.body 
@@ -37,8 +39,11 @@ const createCollege = async function (req, res) {
   }
 
   
+//**********************************************************************//
 
-const createIntern = async function(req, res){
+//--CREATING INTERN
+
+  const createIntern = async function(req, res){
   try{
     let data = req.body
     let arr = Object.keys(data)
@@ -50,15 +55,15 @@ const createIntern = async function(req, res){
 
     if (arr.length == 0) return res.status(400).send({ status: false, msg: "Invalid request. Please provide Details" })
     else if (!req.body.name || !req.body.email || !req.body.mobile || !req.body.collegeId) return res.status(400).send({  status: false ,msg: "Input field missing" })
-    else if(!data.name)  return res.status(400).send({status: false, msg: "name is required"})
+    
     else if (Name == false) return res.status(400).send({status:false , msg: "Please Enter valid name." })
-    else if(!data.email)  return res.status(400).send({status: false, msg: "email is required"})
+    
     else if (Email == false) return res.status(400).send({status:false , msg: "Please Enter valid email." })
     else if(intern)  return res.status(400).send({status: false, msg: "email already exist!"})
-    else if(!data.mobile)  return res.status(400).send({status: false, msg: "mobile number is required"})
+    
     else if (Mobile == false) return res.status(400).send({status:false , msg: "Please Enter valid mobile number." })
     else if(mobileNo)  return res.status(400).send({status: false, msg: "mobile number already exist!"})
-    else if(!data.collegeId)  return res.status(400).send({status: false, msg: "collegeId is required"})
+  
     else if (mongoose.Types.ObjectId.isValid(data.collegeId) == false) return res.status(400).send({ staus: false, msg: "College Id is Invalid" })
 
     let Id = await collegeModel.findOne({ _id: data.collegeId ,isDeleted:false});
@@ -74,34 +79,35 @@ const createIntern = async function(req, res){
 }
 
 
+//**********************************************************************//
+  
+//--COLLEGE DETAILS ALONG WITH INTERN LIST
 
-const collegeDetails =async function(req ,res){
+  const collegeDetails =async function(req ,res){
   try{
       const info = req.query.collegeName
-      if(Object.keys(info).length === 0) return res.status(400).send({status:false , message:"please Enter College Name"})
+      if(!info) return res.status(400).send({status:false , message:"Please Enter College Name"})
       const college = await collegeModel.findOne({name: info ,isDeleted:false})
-      if(!college) return res.status(400).send({status:false , message:"did not found college with this name please register first"})
+      if(!college) return res.status(400).send({status:false , message:"Did not found college with this name."})
       const { name, fullName, logoLink } = college
-        const data = { name, fullName, logoLink };
-        data["interests"] = [];
-        const collegeIdFromcollege = college._id;
+      const data = { name, fullName, logoLink };
+      data["interests"] = [];
+      const collegeIdFromcollege = college._id;
 
-        const internList = await interModel.find({ collegeId: collegeIdFromcollege  ,isDeleted:false});
-        if (!internList) return res.status(404).send({ status: false, message: `${info} We Did not Have Any Intern With This College` });
-        data["interests"] = [...internList]
-        res.status(200).send({ status: true, data: data });
-
-
+      const internList = await interModel.find({ collegeId: collegeIdFromcollege  ,isDeleted:false});
+      if (internList.length==0) return res.status(404).send({ status: false, message: `We Did not Have Any Intern With ${info} College` });
+      data["interests"] = [...internList]
+      res.status(200).send({ status: true, data: data });
+  }catch (err) {
+    res.status(500).send({  status: false , msg: "Server not responding", error: err.message });
   }
-  catch(error){
-    console.log({message:error.message})
-    res.status(500).send({status:false , message:error.Message})
   }
-}
+
+//**********************************************************************//
 
 
 module.exports.createIntern = createIntern;
 
 module.exports.createCollege = createCollege;
 
-module.exports.collegeDetails =collegeDetails ;
+module.exports.collegeDetails =collegeDetails;

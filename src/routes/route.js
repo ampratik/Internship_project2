@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const Controllers = require("../controllers/commonControllers")
-//const middleWare = require("../middleware/commonMiddleware")
 
+//--Create Intern
 router.post("/functionup/interns",Controllers.createIntern)
 
+//--Create College
 router.post("/functionup/colleges",Controllers.createCollege)
 
-router.get("/functionup/getcollegeDetails",Controllers.collegeDetails)
+//--Details
+router.get("/functionup/collegeDetails",Controllers.collegeDetails)
 
 module.exports = router;
