@@ -12,6 +12,9 @@ const createCollege = async function (req, res) {
       let logo =req.body.logoLink;
       let Name =req.body.name;
       let FullName =req.body.fullName;
+
+      let url =/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*\.(?:png|jpg|jpeg))*$/.test(logo)
+      console.log(url)
     
       let name = /^[a-zA-Z ]{2,45}$/.test(Name);
 
@@ -26,12 +29,15 @@ const createCollege = async function (req, res) {
       else if (name == false) {
         res.status(400).send({ status: false , msg: "Please Enter valid name." });
       }
+      else if (url == false) {
+        res.status(400).send({ status: false , msg: "Please Enter valid URL." });
+      }
       else if (colleges) {
         res.status(400).send({ status: false , msg: "This College already exist" })
       }
       else if (!colleges) {
         let dataCreated = await collegeModel.create(Body);
-        res.status(200).send({  status: true ,data: dataCreated });
+        res.status(201).send({  status: true ,data: dataCreated });
       }
     } catch (err) {
       res.status(500).send({  status: false , msg: "Server not responding", error: err.message });
@@ -68,7 +74,7 @@ const createCollege = async function (req, res) {
 
     let Id = await collegeModel.findOne({ _id: data.collegeId ,isDeleted:false});
 
-    if(!Id){res.status(400).send({ status: false, Error: "College does not exist!" });}
+    if(!Id){res.status(404).send({ status: false, Error: "College does not exist!" });}
     else{
         let internCreated = await interModel.create(data);
         res.status(201).send({ status: true, data: internCreated});
@@ -88,7 +94,7 @@ const createCollege = async function (req, res) {
       const info = req.query.collegeName
       if(!info) return res.status(400).send({status:false , message:"Please Enter College Name"})
       const college = await collegeModel.findOne({name: info ,isDeleted:false})
-      if(!college) return res.status(400).send({status:false , message:"Did not found college with this name."})
+      if(!college) return res.status(404).send({status:false , message:"Did not found college with this name."})
       const { name, fullName, logoLink } = college
       const data = { name, fullName, logoLink };
       data["interests"] = [];
