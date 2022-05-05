@@ -18,7 +18,7 @@ const internSchema = new mongoose.Schema({
             },
 
     mobile :{
-            type : Number,
+            type : String,
             required : true,
             unique : true,
             trim:true,
@@ -35,7 +35,7 @@ const internSchema = new mongoose.Schema({
         type : Boolean,
         default: false
         }
-    },{ timestamps: true }
+    }//,{ timestamps: true }
 );
 
 module.exports = mongoose.model('intern', internSchema) 

@@ -1,3 +1,5 @@
+
+
 const interModel = require("../models/internModel")
 const collegeModel = require("../models/collegeModel")
 const mongoose = require('mongoose');
@@ -9,24 +11,21 @@ const createCollege = async function (req, res) {
     try {
       let Body = req.body 
       let arr = Object.keys(Body)
-      let logo =req.body.logoLink;
-      let Name =req.body.name;
-      let FullName =req.body.fullName;
-
-      let url =/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*\.(?:png|jpg|jpeg))*$/.test(logo)
-      console.log(url)
-    
-      let name = /^[a-zA-Z ]{2,45}$/.test(Name);
-
-      let colleges = await collegeModel.findOne({ name : Name });
+      let logoLink = req.body.logoLink;
+      let name = req.body.name;
+      let fullName = req.body.fullName;
+     
+     let colleges = await collegeModel.findOne({ name : name});
+      let url =/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*\.(?:png|jpg|jpeg))*$/.test(logoLink);
+      let name1 = /^[a-zA-Z]{2,45}$/.test(name);
 
       if (arr.length==0) {
         res.status(400).send({ status: false , msg: "Invalid request. Please provide Details" })
       }
-      else if (!Name || !FullName || !logo) {
+      else if (!name || !fullName || !logoLink) {
         res.status(400).send({ status: false , msg: "Input field missing" })
       }
-      else if (name == false) {
+      else if (name1 == false) {
         res.status(400).send({ status: false , msg: "Please Enter valid name." });
       }
       else if (url == false) {
@@ -55,7 +54,8 @@ const createCollege = async function (req, res) {
     let arr = Object.keys(data)
     let Name = /^[a-zA-Z ]{2,45}$/.test(req.body.name);
     let Email = /^[a-z0-9._-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(req.body.email)
-    let Mobile = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/.test(req.body.mobile) 
+    let Mobile = /^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(req.body.mobile)
+    
     let intern = await interModel.findOne({ email : req.body.email});
     let mobileNo = await interModel.findOne({ mobile : req.body.mobile});
 
@@ -93,16 +93,21 @@ const createCollege = async function (req, res) {
   try{
       const info = req.query.collegeName
       if(!info) return res.status(400).send({status:false , message:"Please Enter College Name"})
+
       const college = await collegeModel.findOne({name: info ,isDeleted:false})
       if(!college) return res.status(404).send({status:false , message:"Did not found college with this name."})
-      const { name, fullName, logoLink } = college
+
+      const { name, fullName, logoLink } = college //unpacked properties of college.
+      console.log({ name, fullName, logoLink })
       const data = { name, fullName, logoLink };
-      data["interests"] = [];
+
+      data["interests"] = []; //In data object we added a key "interest" which is an empty array.
+      
       const collegeIdFromcollege = college._id;
 
-      const internList = await interModel.find({ collegeId: collegeIdFromcollege  ,isDeleted:false});
+      const internList = await interModel.find({ collegeId: collegeIdFromcollege,isDeleted:false});
       if (internList.length==0) return res.status(404).send({ status: false, message: `We Did not Have Any Intern With ${info} College` });
-      data["interests"] = [...internList]
+      data["interests"] = [...internList] //copying using spread syntax.
       res.status(200).send({ status: true, data: data });
   }catch (err) {
     res.status(500).send({  status: false , msg: "Server not responding", error: err.message });
