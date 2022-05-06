@@ -15,9 +15,11 @@ const createCollege = async function (req, res) {
       let name = req.body.name;
       let fullName = req.body.fullName;
      
-     let colleges = await collegeModel.findOne({ name : name});
+     
       let url =/^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*\.(?:png|jpg|jpeg))*$/.test(logoLink);
       let name1 = /^[a-zA-Z]{2,45}$/.test(name);
+
+      let colleges = await collegeModel.findOne({ name : name});
 
       if (arr.length==0) {
         res.status(400).send({ status: false , msg: "Invalid request. Please provide Details" })
